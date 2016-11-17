@@ -1,0 +1,75 @@
+@CHARSET "UTF-8";
+		body{
+			font-family: "微软雅黑";
+			background-image:url(/myhome/images/login.jpg);
+			background-size : 100% 100%;
+			background-repeat:no-repeat;
+		}
+		.userdo{
+			border:1px solid #faa121;
+			background:#fff;
+			opacity: 0.5;
+			height:439px;
+			width:462px;
+			position: absolute;
+			top : 20%;
+			left:32%;
+		} 
+		.middle{
+			position:absolute;
+			height:300px;
+			width:550px;
+			left:37%;
+			top:22%;
+		}
+		.loginTop{
+			color:#faa121;
+			font-size:17px;
+			margin-top:34px;
+			margin-left: 55px;
+		}
+		.loginmiddle{
+			margin-left:55px;
+			margin-top:10px;
+			height:200px;
+			width:300px;
+		}
+		.register{
+			border:none;
+			height:38px;
+			width:280px;
+			margin-top:16px;
+		}
+		.remember{
+			margin:5px;
+			font-size:14px;
+		}
+		.remember a{
+			display:inline;
+			float:right;
+			margin-right:17px;
+			color:black;
+		}
+		#userLoginName{
+			background-image:url(/myhome/images/userlogin.png);
+			font-size: 18px;
+			padding-left: 33px;
+		}
+		#userPassword{
+			background-image:url(/myhome/images/password.png);
+			font-size: 18px;
+			padding-left: 33px;
+		}
+		#submit{
+			width:82px;
+			height:30px;
+			color:#fff;
+			font-weight: bold;
+			font-size: 18px;
+			background:#faa121;
+			border:none;
+			border-radius:5px;
+		}
+		.cursor{
+			cursor:pointer;
+		}

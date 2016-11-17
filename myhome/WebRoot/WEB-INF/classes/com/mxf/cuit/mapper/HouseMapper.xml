@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.HouseMapper">
+		<resultMap type="com.mxf.cuit.entity.House" id="BaseList">
+			<id property="id" column="id"/>
+			<result property="typeId" column="type_id"/>
+			<result property="houseAddress" column="house_address"/>
+			<result property="addressName" column="address_name"/>
+			<result property="houseOwner" column="house_owner"/>
+			<result property="houseOwnerName" column="houseOwnerName"/>
+			<result property="houseIntroduce" column="house_introduce"/>
+			<result property="ischeck" column="is_check"/>
+			<result property="description" column="description"/>
+			<result property="housePrice" column="house_price"/>
+			<result property="seeTime" column="see_time"/>
+			<result property="typeName" column="typeName"/>
+			<collection property="houseImgList" ofType="com.mxf.cuit.entity.HouseImg"
+				select="selectImg" column="id"/>
+		</resultMap>
+		<resultMap type="com.mxf.cuit.entity.HouseImg" id="HouseImgeResult">
+			<id property="id" column="id"/>
+			<result property="imgLocation" column="img_location"/>
+		</resultMap>
+		<select id="selectImg" parameterType="java.lang.String" resultMap="HouseImgeResult">
+			select id,img_location from house_img where house_id = #{id}
+		</select>
+		<sql id="BaseColumn">
+			h.id,h.type_id,h.house_address,h.house_owner,h.house_introduce,h.is_check,h.description,h.house_price,h.see_time,
+			a.address_name,t.type_name typeName,u.user_name houseOwnerName
+		</sql>
+		<!-- 查询houselist -->
+		<select id="getList" parameterType="java.util.Map" resultMap="BaseList">
+			select <include refid="BaseColumn"/>
+			from house h
+			LEFT JOIN address a on h.house_address = a.id
+			left join type t on t.id = h.type_id 
+			left join user u on u.id = h.house_owner
+			<where> 
+				<if test="ischeck == null">
+					h.is_check = false
+				</if>
+				<if test="typeId != null and typeId != ''">
+					and h.type_id=#{typeId}
+				</if>
+				<if test="houseAddress != null and houseAddress != '' ">
+					and h.house_address = #{houseAddress}
+				</if>
+				<if test="ischeck != null and ischeck != ''">
+					and h.is_check = #{ischeck}
+				</if>
+				<if test="houseOwner != null and houseOwner != ''">
+					and h.house_owner = #{houseOwner}
+				</if>
+				<choose>
+					<when test="price == 1">
+						<![CDATA[and h.house_price < 100 ]]>     
+					</when>
+					<when test="price == 2">
+						<![CDATA[and h.house_price > 100 and  h.house_price < 300 ]]>     
+					</when>
+					<when test="price == 3">
+						<![CDATA[and h.house_price > 300 and  h.house_price < 600 ]]>     
+					</when>
+					<when test="price == 4">
+						<![CDATA[and h.house_price > 600 and  h.house_price < 1500 ]]>     
+					</when>
+				</choose>
+				<if test="lowPrice != null and lowPrice != ''">
+					<![CDATA[and h.house_price > #{lowPrice} ]]>     
+				</if>
+				<if test="upPrice != null and upPrice != ''">
+					<![CDATA[and h.house_price < #{upPrice} ]]>     
+				</if>
+			</where>
+			order by see_time desc
+			limit #{pageBegin},16
+		 </select>
+		
+		<select id="selectCount" resultType="java.lang.Integer">
+			select count(id) from house
+		</select>
+		
+		 <!-- 根据ID 查询house -->
+		 <select id="getHouseById" parameterType="java.lang.String" resultMap="BaseList">
+		 	select <include refid="BaseColumn"/> from house h
+		 		LEFT JOIN address a on h.house_address = a.id
+			left join type t on t.id = h.type_id 
+			left join user u on u.id = h.house_owner
+		 		 where h.id=#{id}
+		 </select>
+		 
+		 <!-- 删除房屋 -->
+		 <delete id="deleteHouse" parameterType="java.lang.String">
+		 	delete from house where id = #{id}
+		 </delete>
+		 
+		 <!-- 添加房屋 -->
+		 <insert id="addHouse" useGeneratedKeys="true" keyProperty="id" parameterType="com.mxf.cuit.entity.House">
+		 	insert into house (type_id,house_address,house_owner,house_introduce,is_check,description,house_price,see_time)
+		 		values (#{typeId},#{houseAddress},#{houseOwner},#{houseIntroduce},0,#{description},#{housePrice},0)
+		 </insert>
+		 
+		 <!-- 修改house属性 -->
+		 <update id="updateHouse" parameterType="com.mxf.cuit.entity.House">
+		 	update house
+		 	<set>  
+       			<if test="typeId != null and typeId != ''">  
+            		type_id=#{typeId},
+        		</if>
+        		<if test="houseAddress != null and houseAddress != ''">  
+            		house_address=#{houseAddress},
+        		</if>
+        		<if test="houseOwner != null and houseOwner != ''">  
+            		house_owner=#{houseOwner},
+        		</if>
+        		<if test="houseIntroduce != null and houseIntroduce != ''">  
+            		house_introduce=#{houseIntroduce},
+        		</if>
+        		<if test="isCheck != null and isCheck != ''">  
+            		is_check=#{isCheck},
+        		</if>
+        		<if test="description != null and description != ''">  
+            		description=#{description},
+        		</if>
+        		<if test="seeTime != null and seeTime != ''">  
+            		see_time=#{seeTime},
+        		</if>
+        	</set>
+        	where id = #{id}
+		 </update>
+		 <!-- 点击一次house，相应的seeTime + 1 -->
+		 <update id="houseSeeTimeAddOne" parameterType="java.lang.String">
+		 	update house set see_time =  see_time + 1  where id = #{id}
+		 </update>
+</mapper>

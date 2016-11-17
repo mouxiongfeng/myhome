@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.HouseApplyMapper">
+		<resultMap type="com.mxf.cuit.entity.HouseApply" id="BaseList">
+			<id property="id" column="id"/>
+			<result property="userId" column="user_id"/>
+			<result property="houseId" column="hosue_id"/>
+			<result property="applyDate" column="apply_date"/>
+			<result property="isPass" column="is_pass"/>
+			<result property="isDelete" column="is_delete"/>
+			<result property="isSee" column="is_see"/>
+			<result property="userName" column="userName"/>
+			<result property="phone" column="phone"/>
+			<association property="house" javaType="com.mxf.cuit.entity.House">
+			   <result column="house_introduce" property="houseIntroduce"/>
+			   <result column="type_name" property="typeName"/>
+			</association>
+		</resultMap>
+		<!-- 添加一个申请 -->
+		<insert id="addUserApply" parameterType="java.util.Map">
+			insert into house_apply (user_id,house_id,apply_date,is_pass,is_delete,is_see)
+				values (#{userId},#{houseId},now(),0,0,0)
+		</insert>
+		<!-- 查看已申请列表 -->
+		<select id="getIsApplyList" parameterType="java.util.Map" resultMap="BaseList">
+			select a.id,a.user_id,a.house_id,a.apply_date,u.user_name userName,h.house_introduce,a.is_pass,a.is_delete,
+				a.is_see,t.type_name,u.phone
+				from house_apply a
+				left join user u on u.id = a.user_id
+				left join house h on h.id = a.house_id
+				left join type t on t.id = h.type_id
+				where a.is_delete = false and a.is_pass = false
+				<if test="owner != null and owner != ''">
+					and h.house_owner = #{owner}
+				</if>
+				<if test="userId != null and userId != ''">
+					and a.user_id = #{userId}
+				</if>
+		</select>
+		<!-- 更改房间查看状态 -->
+		<update id="isSee">
+			update house_apply set is_see = true
+		</update>
+		<!-- 房主同意 -->
+		<update id="changeIsPass" parameterType="java.lang.String">
+			update house_apply set is_pass = true where id = #{id}
+		</update>
+</mapper>

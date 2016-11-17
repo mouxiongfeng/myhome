@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.HouseAgreeMapper">
+		<resultMap type="com.mxf.cuit.entity.HouseAgree" id="BaseList">
+			<id property="id" column="id"/>
+			<result property="houseApplyId" column="house_apply_id"/>
+			<result property="agreeDate" column="agree_date"/>
+			<result property="isAgree" column="is_agree"/>
+			<result property="isDelete" column="is_delete"/>
+			<result property="isSee" column="is_see"/>
+			<result property="userName" column="userName"/>
+			<result property="phone" column="phone"/>
+			<association property="house" javaType="com.mxf.cuit.entity.House">
+			   <result column="house_introduce" property="houseIntroduce"/>
+			   <result column="type_name" property="typeName"/>
+			</association>
+		</resultMap>
+		<!-- 添加同意 -->
+		<insert id="addHouseAgree" parameterType="java.util.Map">
+			insert into house_agree (house_apply_id,agree_date,is_agree,is_delete,is_see)
+				values (#{houseApplyId},now(),0,0,0)
+		</insert>
+		<!-- 同意列表 -->
+		<select id="getAgreeList" parameterType="java.util.Map" resultMap="BaseList">
+			select a.id,a.agree_date,a.is_agree,a.is_delete,a.is_see,
+					u.user_name userName,h.house_introduce,t.type_name,u.phone
+					from house_agree a
+					left join house_apply ap on ap.id = a.house_apply_id 
+					left join house h on h.id = ap.house_id
+					left join user u on u.id = ap.user_id
+					left join type t on t.id = h.type_id
+					where a.is_delete =false and a.is_agree = false
+				<if test="owner != null and owner != ''">
+					and h.house_owner = #{owner} 
+				</if>
+				<if test="userId != null and userId != ''">
+					and ap.user_id = #{userId}
+				</if>
+					
+		</select>
+</mapper>

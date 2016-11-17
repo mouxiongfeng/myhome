@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.AdminMapper">
+	<resultMap type="com.mxf.cuit.entity.Admin" id="BaseList">
+			<id property="id" column="id"/>
+			<result property="adminLoginName" column="admin_login_name"/>
+			<result property="adminName" column="admin_name"/>
+			<result property="adminPassword" column="admin_password"/>
+			<result property="phone" column="phone"/>
+			<result property="adminImg" column="admin_img"/>
+		</resultMap>
+		<sql id="Base_Column_List">
+			id,admin_login_name,admin_name,admin_password,phone,admin_img
+		</sql>
+		<select id="login" parameterType="com.mxf.cuit.entity.Admin" resultType="com.mxf.cuit.entity.Admin">
+			select <include refid="Base_Column_List"/>
+			from admin where admin_login_name=#{adminLoginName} and admin_password=#{adminPassword}
+		</select>
+		<insert id="register" parameterType="com.mxf.cuit.entity.Admin">
+			insert into admin 
+			<trim prefix="(" suffix=")">
+				id,
+				admin_login_name,
+				admin_name,
+				admin_password,
+				phone,
+				admin_img
+			</trim>
+			<trim prefix=" values (" suffix=")">
+				#{id},
+				#{adminLoginName},
+				#{adminName},
+				#{adminPassword},
+				#{phone},
+				#{adminImg}
+			</trim>
+		 </insert>
+</mapper>

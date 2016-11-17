@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.UserMapper">
+	<resultMap type="com.mxf.cuit.entity.User" id="userList">
+		<id property="id" column="id"/>
+		<result property="userLoginName" column="user_login_name"/>
+		<result property="userName" column="user_name"/>
+		<result property="userPassword" column="user_pasword"/>
+		<result property="phone" column="phone"/>
+		<result property="userImg" column="user_img"/>
+		<result property="isLandlord" column="is_landlord"/>
+		<result property="isApplyOwner" column="is_apply_owner"/>
+	</resultMap>
+	<sql id="Base_Column_User">
+		id,user_login_name,user_name,user_password,phone,user_img,is_landlord,is_apply_owner
+	</sql>
+	<select id="userLogin" parameterType="java.util.Map" resultType="com.mxf.cuit.entity.User">
+		select id,user_login_name userLoginName,user_name userName,phone,user_img userImg,is_landlord isLandlord,
+			is_apply_owner isApplyOwner
+			from user
+			 <where>
+			 	<if test="id != null and id != ''">
+			 		id = #{id}
+			 	</if>
+			 	<if test="userLoginName != null and userLoginName != ''">
+			 		and user_login_name=#{userLoginName}
+			 	</if>
+			 	<if test="userPassword != null and userPassword != ''">
+			 		and user_password=#{userPassword}
+			 	</if>
+			 </where>
+	</select>
+	<insert id="userRegister" parameterType="com.mxf.cuit.entity.User">
+		insert into user 
+			(is_landlord,user_login_name,user_name,user_password,phone,user_img,is_apply_owner) 
+			values (0,#{userLoginName},#{userName},#{userPassword},#{phone},#{userImg},0)
+	</insert>
+	<!-- 用户列表 -->
+	<select id="getUserList" parameterType="java.util.Map" resultMap="userList">
+		select id,is_landlord,user_login_name userLoginName,user_name userName,phone,user_img userImg
+			from user 
+			<where>
+			 	<if test="isLandlord != null and isLandlord != ''">
+			 		is_landlord = #{isLandlord}
+			 	</if>
+			 	<if test="isApplyOwner != null and isApplyOwner != ''">
+			 		and is_apply_owner=#{isApplyOwner}
+			 	</if>
+
+			 </where>
+	</select>
+	<!-- 删除用户 -->
+	<delete id="deleteUserById" parameterType="java.lang.String">
+		delete from user where id =#{id}
+	</delete>
+	<!-- 修改用户信息 -->
+	<update id="updateUser" parameterType="java.util.Map">
+		update  user
+ 		<set>
+			<if test = "isLandlord != null and isLandlord != ''">
+				is_landlord = #{isLandlord},
+			</if>
+			<if test = "userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			<if test = "userPassword != null and userPassword != ''">
+				user_password = #{userPassword},
+			</if>
+			<if test = "phone != null and phone != ''">
+				phone = #{phone},
+			</if>
+			<if test = "userImg != null and userImg != ''">
+				user_img = #{userImg},
+			</if>
+
+			<if test = "isApplyOwner != null" >
+				is_apply_owner = #{isApplyOwner},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper>

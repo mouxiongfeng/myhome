@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mxf.cuit.dao.HouseImgMapper">
+	<resultMap type="com.mxf.cuit.entity.HouseImg" id="BaseList">
+			<id property="id" column="id"/>
+			<result property="houseId" column="house_id"/>
+			<result property="imgLocation" column="img_location"/>
+		</resultMap>
+		<insert id="adddHouseImg" parameterType="java.util.Map">
+			insert into house_img (house_id,img_location)   
+			    values  
+			    <foreach collection="houseImgList" item="imgLocation" index="index" separator=",">  
+			        (#{houseId},#{imgLocation})
+			    </foreach> 
+		</insert>
+</mapper>
